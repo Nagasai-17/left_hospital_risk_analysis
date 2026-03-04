@@ -106,9 +106,7 @@ def book_appointment():
 
     return jsonify({
         "message": "Appointment booked successfully",
-        "patient_name": patient_name,
-        "risk_level": risk_level,
-        "priority": priority
+        "risk_level": risk_level
     })
 
 
@@ -148,14 +146,14 @@ def doctor_dashboard():
 def get_appointments():
 
     if not session.get("doctor_logged_in"):
-        return jsonify([]), 401
+        return jsonify([])
 
     conn = get_db()
 
     rows = conn.execute("""
         SELECT id, patient_name, symptoms, severity_score, risk_level, priority, status
         FROM appointments
-        ORDER BY priority ASC, id ASC
+        ORDER BY priority ASC
     """).fetchall()
 
     conn.close()
@@ -176,17 +174,14 @@ def get_appointments():
     return jsonify(appointments)
 
 
-@app.route("/complete-appointment/<int:appointment_id>", methods=["PUT"])
-def complete_appointment(appointment_id):
-
-    if not session.get("doctor_logged_in"):
-        return jsonify({"message": "Unauthorized"}), 401
+@app.route("/complete-appointment/<int:id>", methods=["PUT"])
+def complete_appointment(id):
 
     conn = get_db()
 
     conn.execute(
         "UPDATE appointments SET status='Completed' WHERE id=?",
-        (appointment_id,)
+        (id,)
     )
 
     conn.commit()
@@ -196,4 +191,4 @@ def complete_appointment(appointment_id):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
