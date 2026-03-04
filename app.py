@@ -4,11 +4,6 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = "left_hospital_secret_key"
 
-app.config.update(
-    SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=True
-)
-
 DB_NAME = "appointments.db"
 
 
@@ -70,13 +65,8 @@ def patient():
 @app.route("/book-appointment", methods=["POST"])
 def book_appointment():
 
-    if request.is_json:
-        data = request.get_json()
-        patient_name = data.get("patient_name")
-        symptoms = data.get("symptoms", [])
-    else:
-        patient_name = request.form.get("patient_name")
-        symptoms = request.form.getlist("symptoms")
+    patient_name = request.form.get("patient_name")
+    symptoms = request.form.getlist("symptoms")
 
     if not patient_name or not symptoms:
         return jsonify({"error": "Patient name and symptoms required"}), 400
