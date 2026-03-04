@@ -157,7 +157,7 @@ def get_appointments():
         ORDER BY priority ASC, id ASC
     """).fetchall()
     conn.close()
-
+ 
     return jsonify([
         {
             "id": r["id"],
